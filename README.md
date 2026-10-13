@@ -1,4 +1,4 @@
-# Portfolio + Ask bot
+# portfolio
 
 The portfolio is a static HTML/CSS/JavaScript site. The Ask page uses a server-side endpoint to keep the Anthropic API key private. `server.js` provides the local Express server, and `functions/api/ask.js` provides the matching Cloudflare Pages Function at `/api/ask`.
 
