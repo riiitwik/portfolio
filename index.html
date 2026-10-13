@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ritwik - UX Designer & Experience Engineer</title>
+<meta name="description" content="Portfolio of Ritwik, a UX designer and experience engineer creating thoughtful digital experiences.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================
+     DESIGN TOKENS
+     bg:        #0B0B0E  near-black, slightly warm
+     bg-raised: #141317  panel / card surface
+     ink:       #F2F0EA  warm off-white text
+     ink-dim:   #8E8B85  secondary text
+     gold:      #C79A4B  accent — muted antique gold
+     gold-dim:  #6E5626  accent, low emphasis
+     line:      rgba(242,240,234,0.09)
+     ========================================================= */
+  :root{
+    --bg:#0B0B0E;
+    --bg-raised:#141317;
+    --ink:#F2F0EA;
+    --ink-dim:#8E8B85;
+    --gold:#5FA596;
+    --gold-dim:#2E4A45;
+    --line: rgba(242,240,234,0.09);
+    --ease: cubic-bezier(.16,.84,.44,1);
+    --bg-rgb: 11,11,14;
+    --ink-rgb: 242,240,234;
+    --gold-rgb: 95,165,150;
+    --shadow: none;
+    --shadow-lg: none;
+    /* terracotta — reserved strictly for moments of resistance */
+    --resist:#E2724A;
+    --resist-rgb: 226,114,74;
+  }
+
+  html[data-theme="light"]{
+    --bg:#F4F4F2;
+    --bg-raised:#E2DFD3;
+    --ink:#17181A;
+    --ink-dim:#65676B;
+    --gold:#2D6C60;
+    --gold-dim:#C3DCD5;
+    --line: rgba(23,24,26,0.14);
+    --bg-rgb: 244,244,242;
+    --ink-rgb: 23,24,26;
+    --gold-rgb: 45,108,96;
+    --shadow: 0 8px 24px rgba(23,24,26,0.10);
+    --shadow-lg: 0 20px 56px rgba(23,24,26,0.16);
+    --resist:#B8512C;
+    --resist-rgb: 184,81,44;
+  }
+
+  html{ transition:background 300ms var(--ease); }
+  body{ transition:background 300ms var(--ease), color 300ms var(--ease); }
+
+  html[data-theme="light"] body{
+    background:
+      radial-gradient(50% 42% at 10% 0%, rgba(var(--gold-rgb),0.16), transparent 60%),
+      radial-gradient(45% 40% at 100% 15%, rgba(var(--gold-rgb),0.11), transparent 65%),
+      radial-gradient(55% 50% at 45% 100%, rgba(var(--gold-rgb),0.09), transparent 70%),
+      radial-gradient(30% 30% at 85% 70%, rgba(23,24,26,0.04), transparent 70%),
+      var(--bg);
+  }
+  html[data-theme="light"] body::after{
+    content:'';
+    position:fixed; inset:0;
+    z-index:1;
+    pointer-events:none;
+    opacity:0.035;
+    mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    overflow-x:hidden;
+  }
+
+  ::selection{ background:var(--gold); color:var(--bg); }
+
+  a{ color:inherit; text-decoration:none; }
+  img,video{ display:block; max-width:100%; }
+
+  .eyebrow{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+  }
+
+  h1{ font-family:'Fraunces', serif; font-weight:400; line-height:1.05; }
+  h2,h3{ font-family:'IBM Plex Sans', sans-serif; font-weight:500; line-height:1.05; }
+
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 32px; }
+  header .wrap{ padding:0 22px; }
+
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+
+
+  /* =========================================================
+     NAV
+     ========================================================= */
+  header{
+    position:fixed; top:0; left:0; right:0;
+    z-index:100;
+    padding:12px 0;
+    background: rgba(var(--bg-rgb), 0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    transition: background 300ms var(--ease);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:nowrap;
+  }
+  .logo{ display:flex; align-items:center; flex-shrink:0; }
+  .logo-mark path[fill="var(--ink)"]{ transition: fill 220ms var(--ease); }
+  .logo:hover .logo-mark path[fill="var(--ink)"],
+  .logo:focus-visible .logo-mark path[fill="var(--ink)"]{ fill:var(--gold); }
+  .logo-mark{ display:block; }
+  .nav-links{
+    display:flex; align-items:center;
+    flex-wrap:nowrap;
+    gap:34px;
+    list-style:none;
+    margin:0; padding:0;
+  }
+  .nav-links li{ display:flex; }
+  .nav-links a{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:400;
+    font-size:14px;
+    letter-spacing:0.02em;
+    color:var(--ink);
+    transition:color 250ms var(--ease);
+    position:relative;
+    white-space:nowrap;
+  }
+  .nav-links a:hover{ color:var(--ink-dim); }
+  .nav-links a.active{ color:var(--gold); }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:-6px;
+    width:0; height:1px; background:var(--gold);
+    transition:width 300ms var(--ease);
+  }
+  .nav-links a:hover::after{ width:100%; }
+  .nav-links a.active::after{ width:100%; }
+
+  .nav-right{ display:flex; align-items:center; flex-wrap:nowrap; gap:52px; flex-shrink:0; }
+
+  #theme-toggle{
+    width:34px; height:34px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink);
+    font-size:16px;
+    line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:border-color 300ms var(--ease), transform 400ms var(--ease), color 300ms var(--ease);
+  }
+  #theme-toggle:hover{ border-color:var(--gold); color:var(--gold); transform:rotate(20deg); }
+
+
+  /* VIEW TOGGLE (Portfolio | Ask) */
+  .view-toggle{ display:flex; gap:2px; padding:3px; border:1px solid var(--line); border-radius:999px; font-size:13px; }
+  .view-toggle > *{ display:flex; align-items:center; gap:7px; padding:6px 14px; border-radius:999px; border:1px solid transparent; color:var(--ink-dim); text-decoration:none; }
+  .view-toggle [aria-current]{ background:var(--bg-raised); border-color:var(--line); color:var(--ink); }
+  .view-toggle i{ width:6px; height:6px; border-radius:50%; background:var(--gold); }
+  .view-toggle a:hover{ color:var(--ink); }
+  .view-toggle a:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .ask-link{ display:inline-block; margin-top:28px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em; color:var(--gold); text-decoration:none; border-bottom:1px solid var(--gold-dim); padding-bottom:4px; position:relative; z-index:2; }
+  .ask-link:hover{ border-bottom-color:var(--gold); }
+  @media (max-width:900px){ .nav-right{ gap:18px; } }
+  @media (max-width:720px){ .nav-links{ display:none; } }
+  @media (max-width:720px){
+    .nav-links{ gap:14px; }
+    .nav-links a{ font-size:11px; }
+    .nav-right{ gap:12px; }
+  }
+  @media (max-width:560px){
+    .wrap{ padding:0 20px; }
+    nav{ gap:12px; }
+    .nav-links{
+      gap:12px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .nav-links::-webkit-scrollbar{ display:none; }
+  }
+
+  /* =========================================================
+     HERO
+     ========================================================= */
+  #hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; align-items:center;
+    overflow:hidden;
+  }
+  #particle-canvas{
+    position:absolute; inset:0;
+    display:block;
+    width:100%; height:100%;
+    z-index:0;
+    opacity:0.55;
+  }
+  .hero-inner{
+    position:relative; z-index:1;
+    width:100%;
+  }
+  .hero-inner .eyebrow{ margin-bottom:64px; font-family:'JetBrains Mono', monospace; }
+  .hero-inner h1{
+    font-size:clamp(40px, 7vw, 92px);
+    font-weight:300;
+    max-width:920px;
+    color:var(--ink);
+  }
+  .hero-inner h1 em{
+    font-style:italic;
+    color:var(--gold);
+    font-weight:400;
+  }
+  .hero-sub{
+    margin-top:26px;
+    max-width:520px;
+    color:var(--ink-dim);
+    font-size:17px;
+    line-height:1.6;
+  }
+  .hero-scroll{
+    position:absolute; bottom:40px;
+    left:max(32px, calc((100vw - 1120px) / 2 + 32px));
+    width:52px; height:52px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink);
+    transition:border-color 300ms var(--ease), color 300ms var(--ease);
+    animation: scrollBounce 2.2s ease-in-out infinite;
+  }
+  .hero-scroll:hover{ border-color:var(--gold); color:var(--gold); }
+  .hero-scroll svg{ width:16px; height:16px; }
+  @keyframes scrollBounce{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(7px); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero-scroll{ animation:none; }
+  }
+
+  /* =========================================================
+     SECTION SHARED
+     ========================================================= */
+  section{ padding:140px 0; position:relative; scroll-margin-top:88px; }
+  #work{ padding:100px 0 110px; }
+  .section-head{ margin-bottom:64px; }
+  .section-head h2{
+    font-size:clamp(30px, 4vw, 46px);
+    font-weight:300;
+    margin-top:14px;
+  }
+
+  /* =========================================================
+     WORK
+     ========================================================= */
+  .work-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:24px;
+  }
+  .work-card{
+    display:block;
+    border-radius:12px;
+    border:1px solid var(--line);
+    overflow:hidden;
+    transition: transform 350ms var(--ease), border-color 350ms var(--ease);
+  }
+  .work-card:hover, .work-card:focus-visible{ transform:translateY(-4px); border-color:var(--gold-dim); }
+
+  .card-thumb{
+    position:relative;
+    aspect-ratio:16/9;
+    overflow:hidden;
+    background:var(--bg-raised);
+    container-type:inline-size;
+  }
+  .card-thumb img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+    transform:scale(1);
+    filter:none;
+    transition:transform 700ms var(--ease);
+  }
+  .work-card:hover .card-thumb img{ transform:scale(1.035); opacity:1; }
+
+  .vig{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; }
+  .vig *{ animation-play-state:paused; }
+  .work-card:hover .vig *, .work-card:focus-visible .vig *{ animation-play-state:running; }
+
+  /* 01 RBAC */
+  .rb{ width:64cqw; display:flex; flex-direction:column; gap:3.4cqw; }
+  .rb-top{ display:flex; align-items:center; justify-content:space-between; font-size:2cqw; letter-spacing:.08em; color:var(--ink-dim); }
+  .rb-role{ position:relative; width:11cqw; height:4.4cqw; }
+  .rb-role span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; border:1px solid var(--gold-dim); border-radius:999px; color:var(--gold); font-size:2cqw; letter-spacing:.04em; }
+  .rb-role .viewer{ opacity:0; border-color:var(--line); color:var(--ink-dim); animation:rbViewer 5s var(--ease) infinite; }
+  .rb-role .admin{ animation:rbAdmin 5s var(--ease) infinite; }
+  .rb-btns{ display:flex; gap:2cqw; }
+  .rb-btns span{ padding:1.9cqw 3.4cqw; border:1px solid var(--line); border-radius:6px; font-size:2.3cqw; color:var(--ink); }
+  .rb-btns .create{ background:var(--gold); border-color:var(--gold); color:var(--bg); animation:rbCreate 5s var(--ease) infinite; }
+  .rb-rows{ display:flex; flex-direction:column; gap:1.8cqw; margin-top:1cqw; }
+  .rb-rows i{ display:block; height:1.6cqw; border-radius:2px; background:var(--line); }
+  .rb-rows i:nth-child(2){ width:72%; } .rb-rows i:nth-child(3){ width:48%; }
+  .rb-note{ position:relative; height:3cqw; font-size:1.9cqw; letter-spacing:.04em; color:var(--ink-dim); }
+  .rb-note span{ position:absolute; left:0; top:0; }
+  .rb-note .n2{ opacity:0; color:var(--ink); animation:rbViewer 5s var(--ease) infinite; }
+  .rb-note .n1{ animation:rbAdmin 5s var(--ease) infinite; }
+  @keyframes rbAdmin{ 0%,38%{opacity:1} 46%,92%{opacity:0} 100%{opacity:1} }
+  @keyframes rbViewer{ 0%,38%{opacity:0} 46%,92%{opacity:1} 100%{opacity:0} }
+  @keyframes rbCreate{ 0%,38%{opacity:1;transform:translateX(0)} 46%,92%{opacity:0;transform:translateX(-1.4cqw)} 100%{opacity:1;transform:translateX(0)} }
+
+  /* 02 Split */
+  .sp{ width:72cqw; height:auto; overflow:visible; }
+  .sp .ln{ fill:none; stroke:var(--line); stroke-width:1.5; }
+  .sp .hot{ fill:none; stroke:var(--gold); stroke-width:2; stroke-dasharray:1; stroke-dashoffset:1; animation:spDraw 4.4s var(--ease) infinite; }
+  .sp .pill{ fill:none; stroke:var(--ink-dim); stroke-width:1.2; opacity:.75; }
+  .sp .pill.def{ stroke-dasharray:4 3; animation:spPill 4.4s var(--ease) infinite; }
+  .sp text{ font-family:'JetBrains Mono',monospace; font-size:11px; fill:var(--ink-dim); }
+  .sp .node{ fill:var(--bg); stroke:var(--ink); stroke-width:1.2; }
+  .sp .node-t{ fill:var(--ink); }
+  .sp .else{ fill:var(--gold); opacity:0; animation:spElse 4.4s var(--ease) infinite; }
+  @keyframes spDraw{ 0%,10%{stroke-dashoffset:1} 50%,86%{stroke-dashoffset:0} 100%{stroke-dashoffset:1} }
+  @keyframes spPill{ 0%,40%{opacity:.75} 52%,86%{opacity:1} 100%{opacity:.75} }
+  @keyframes spElse{ 0%,44%{opacity:0;transform:translateX(-4px)} 56%,86%{opacity:1;transform:translateX(0)} 100%{opacity:0} }
+
+  /* 03 and 04 overlay panels */
+  .ov{ position:absolute; left:4cqw; bottom:4cqw; display:flex; align-items:center; gap:2.4cqw; padding:1.6cqw 2.4cqw; background:var(--bg-raised); border:1px solid var(--line); border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:2cqw; color:var(--ink-dim); opacity:0; transform:translateY(1.6cqw); transition:opacity 350ms var(--ease), transform 350ms var(--ease); }
+  .work-card:hover .ov, .work-card:focus-visible .ov{ opacity:1; transform:none; }
+  .seg{ position:relative; display:flex; }
+  .seg b{ position:relative; z-index:1; width:5cqw; text-align:center; font-weight:400; padding:.8cqw 0; color:var(--ink); }
+  .seg u{ position:absolute; top:0; left:0; width:5cqw; height:100%; border-radius:5px; background:var(--gold-dim); border:1px solid var(--gold); animation:segMove 4.2s steps(1,end) infinite; animation-play-state:paused; }
+  .work-card:hover .seg u, .work-card:focus-visible .seg u{ animation-play-state:running; }
+  @keyframes segMove{ 0%{transform:translateX(0)} 33%{transform:translateX(100%)} 66%{transform:translateX(200%)} 100%{transform:translateX(0)} }
+  .ov.ask{ left:4cqw; right:4cqw; flex-direction:column; align-items:stretch; gap:1.4cqw; }
+  .ov.ask .q{ color:var(--ink); }
+  .ov.ask .q::after{ content:'|'; color:var(--gold); margin-left:3px; animation:caret 1s steps(1) infinite; animation-play-state:paused; }
+  .work-card:hover .ov.ask .q::after, .work-card:focus-visible .ov.ask .q::after{ animation-play-state:running; }
+  .ov.ask .a{ color:var(--gold); opacity:0; transform:translateY(1cqw); animation:ans 4.2s var(--ease) infinite; animation-play-state:paused; }
+  .work-card:hover .ov.ask .a, .work-card:focus-visible .ov.ask .a{ animation-play-state:running; }
+  @keyframes ans{ 0%,32%{opacity:0;transform:translateY(1cqw)} 44%,88%{opacity:1;transform:none} 100%{opacity:0} }
+  @keyframes caret{ 50%{opacity:0} }
+
+  @media (prefers-reduced-motion:reduce){
+    .vig *, .seg u, .ov.ask .a, .ov.ask .q::after{ animation:none !important; }
+    .rb-role .viewer, .rb-note .n2{ opacity:0; }
+    .sp .hot{ stroke-dashoffset:0; } .sp .else{ opacity:1; }
+    .ov.ask .a{ opacity:1; transform:none; }
+    .work-card, .card-thumb img, .ov{ transition:none; }
+  }
+
+  .card-body{ padding:22px 24px 26px; }
+  .card-body .num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--ink-dim);
+  }
+  .card-body h3{
+    font-size:19px;
+    font-weight:500;
+    margin-top:10px;
+  }
+  .card-desc{ margin-top:12px; color:var(--ink-dim); font-size:14px; line-height:1.55; }
+  .work-tags{ display:flex; flex-wrap:wrap; margin-top:16px; }
+  .work-tags span{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:0.04em;
+    color:var(--ink-dim);
+  }
+  .work-tags span:not(:last-child)::after{
+    content:'·';
+    margin:0 9px;
+    color:var(--line);
+  }
+
+  @media (max-width:780px){
+    .work-grid{ grid-template-columns:1fr; }
+  }
+
+  /* =========================================================
+     ABOUT
+     ========================================================= */
+  #about .about-grid{
+    display:grid;
+    grid-template-columns:0.8fr 1.2fr;
+    gap:80px;
+    align-items:start;
+  }
+  .about-portrait{
+    aspect-ratio:4/5;
+    border-radius:6px;
+    border:1px solid var(--line);
+    box-shadow: var(--shadow-lg);
+    position:relative;
+    overflow:hidden;
+  }
+  .about-slide{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    transition:opacity 500ms var(--ease);
+    pointer-events:none;
+  }
+  .about-slide.is-active{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .about-slide img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+  }
+  .about-carousel-controls{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:16px;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .about-carousel-dots{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  .about-carousel-controls .about-carousel-dot{
+    display:block;
+    min-width:8px;
+    width:8px;
+    height:8px;
+    min-height:8px;
+    padding:0;
+    border:1px solid rgba(242,240,234,0.75);
+    border-radius:50%;
+    background:rgba(242,240,234,0.48);
+    cursor:pointer;
+    transition:background 250ms var(--ease), transform 250ms var(--ease);
+  }
+  .about-carousel-controls .about-carousel-dot[aria-current="true"]{
+    background:#F2F0EA;
+    transform:scale(1.35);
+  }
+  .about-text p{
+    color:var(--ink-dim);
+    font-size:18px;
+    line-height:1.75;
+    margin-bottom:22px;
+    max-width:560px;
+  }
+  .about-text .pronunciation{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-dim);
+    letter-spacing:0.01em;
+    line-height:1.7;
+    max-width:560px;
+    margin-bottom:32px;
+    padding-bottom:22px;
+    border-bottom:1px solid var(--line);
+  }
+  .about-text .pronunciation .mark{ color:var(--gold); }
+  .about-links{
+    margin-top:36px;
+    display:flex; flex-direction:column; gap:16px;
+  }
+  .about-links a{
+    display:flex; align-items:baseline; gap:14px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+    max-width:560px;
+    transition:border-color 300ms var(--ease);
+  }
+  .about-links a:hover{ border-color:var(--gold); }
+  .about-links a .label{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:12px;
+    color:var(--gold);
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    flex-shrink:0;
+  }
+  .about-links a .desc{ color:var(--ink-dim); font-size:14px; }
+
+  @media (max-width:820px){
+    #about .about-grid{ grid-template-columns:1fr; gap:40px; }
+    .about-portrait{ max-width:280px; }
+  }
+
+  /* =========================================================
+     CONTACT
+     ========================================================= */
+  #contact{ text-align:center; }
+  #contact h2{
+    font-size:clamp(36px, 6vw, 68px);
+    font-weight:300;
+    max-width:760px;
+    margin:20px auto 0;
+  }
+  #contact .lede{
+    color:var(--ink-dim);
+    max-width:480px;
+    margin:22px auto 0;
+    font-size:16px;
+    line-height:1.7;
+  }
+  .contact-email{
+    display:inline-block;
+    margin-top:44px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:500;
+    font-size:clamp(22px, 3.6vw, 34px);
+    color:var(--gold);
+    border-bottom:1px solid var(--gold-dim);
+    padding-bottom:6px;
+    transition:opacity 250ms var(--ease);
+  }
+  .contact-email:hover{ opacity:0.75; }
+
+  .social-row{
+    margin-top:56px;
+    display:flex; justify-content:center; gap:28px;
+    flex-wrap:wrap;
+  }
+  .social-row a{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    transition:color 250ms var(--ease);
+  }
+  .social-row a:hover{ color:var(--gold); }
+
+  footer{
+    padding:36px 0 48px;
+    border-top:1px solid var(--line);
+    margin-top:60px;
+  }
+  footer .wrap{
+    display:flex; justify-content:space-between; align-items:center;
+    color:var(--ink-dim);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:11px;
+    letter-spacing:0.06em;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+  }
+</style>
+    <link rel="icon" href="favicon.svg?v=2" type="image/svg+xml">
+    <link rel="icon" href="favicon-32.png?v=2" sizes="32x32" type="image/png">
+    <link rel="icon" href="favicon-16.png?v=2" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+    <link rel="icon" href="favicon.ico?v=2" sizes="any">
+</head>
+<body id="top">
+
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="index.html" class="logo" aria-label="Home">
+          <svg class="logo-mark" width="30" height="23" viewBox="0 0 640 490" role="img" aria-label="ऱ calligraphy logo" xmlns="http://www.w3.org/2000/svg">
+            <path fill="var(--ink)" fill-rule="evenodd" d="M 20 17 L 20 20 L 25 28 L 44 47 L 45 47 L 58 59 L 68 64 L 151 64 L 152 63 L 220 63 L 221 62 L 312 62 L 313 63 L 313 71 L 314 72 L 313 75 L 314 78 L 314 100 L 313 101 L 314 102 L 314 155 L 315 156 L 314 157 L 314 167 L 315 168 L 314 169 L 315 172 L 314 173 L 314 180 L 315 181 L 314 184 L 315 186 L 315 190 L 314 191 L 315 193 L 315 208 L 314 209 L 297 187 L 285 175 L 285 174 L 259 152 L 256 151 L 244 143 L 238 140 L 236 140 L 229 136 L 214 131 L 201 129 L 200 128 L 193 128 L 192 127 L 165 127 L 164 128 L 152 129 L 151 130 L 148 130 L 147 131 L 144 131 L 138 133 L 117 143 L 109 148 L 100 155 L 89 166 L 88 168 L 88 173 L 117 203 L 133 215 L 135 214 L 134 212 L 134 204 L 137 197 L 141 192 L 152 182 L 170 172 L 182 168 L 189 167 L 190 166 L 204 165 L 205 164 L 223 164 L 224 165 L 232 165 L 233 166 L 238 166 L 246 169 L 249 169 L 257 173 L 259 173 L 275 183 L 287 195 L 296 208 L 292 211 L 279 215 L 251 233 L 209 265 L 175 293 L 165 300 L 160 305 L 133 325 L 122 331 L 113 334 L 104 334 L 99 332 L 98 333 L 99 335 L 107 343 L 116 350 L 129 357 L 135 359 L 140 359 L 141 360 L 153 359 L 171 351 L 192 336 L 283 260 L 296 251 L 300 247 L 314 238 L 315 239 L 315 281 L 316 282 L 315 283 L 316 284 L 316 289 L 315 291 L 316 292 L 316 349 L 317 350 L 316 352 L 316 358 L 317 359 L 317 381 L 318 382 L 318 385 L 319 386 L 319 389 L 322 398 L 331 415 L 344 432 L 359 446 L 373 456 L 384 462 L 402 468 L 413 469 L 407 466 L 405 466 L 403 464 L 398 462 L 389 455 L 378 443 L 372 434 L 367 424 L 363 412 L 362 405 L 361 404 L 360 387 L 359 386 L 359 369 L 358 368 L 359 365 L 358 364 L 357 253 L 356 252 L 357 250 L 357 243 L 356 242 L 356 232 L 357 231 L 357 228 L 358 227 L 362 229 L 369 230 L 373 232 L 376 232 L 385 235 L 389 235 L 390 236 L 398 237 L 399 238 L 404 238 L 405 239 L 410 239 L 411 240 L 416 240 L 417 241 L 440 242 L 441 243 L 455 243 L 456 242 L 464 242 L 465 241 L 477 240 L 485 248 L 489 255 L 491 261 L 491 266 L 492 267 L 491 274 L 489 278 L 482 285 L 466 295 L 449 311 L 439 327 L 436 336 L 436 340 L 435 341 L 435 355 L 436 356 L 437 364 L 442 376 L 454 394 L 472 412 L 489 424 L 508 433 L 514 435 L 517 435 L 518 436 L 521 436 L 522 437 L 526 437 L 527 438 L 548 438 L 549 437 L 553 437 L 554 436 L 557 436 L 563 434 L 576 427 L 576 426 L 570 429 L 564 430 L 563 431 L 559 431 L 558 432 L 541 432 L 540 431 L 535 431 L 534 430 L 531 430 L 525 428 L 513 422 L 498 411 L 486 398 L 476 382 L 476 380 L 473 374 L 472 366 L 471 365 L 472 350 L 476 340 L 482 331 L 499 315 L 515 306 L 523 304 L 525 300 L 524 298 L 525 295 L 524 294 L 522 284 L 513 265 L 502 249 L 488 235 L 490 233 L 492 233 L 502 228 L 504 228 L 506 226 L 517 220 L 532 206 L 534 202 L 537 199 L 543 185 L 544 175 L 545 174 L 545 168 L 544 167 L 543 158 L 538 147 L 527 135 L 519 130 L 510 127 L 507 125 L 498 124 L 497 123 L 477 123 L 476 124 L 469 124 L 468 125 L 461 126 L 449 130 L 449 131 L 452 130 L 458 130 L 459 131 L 466 131 L 475 134 L 485 140 L 490 145 L 495 154 L 495 157 L 496 158 L 496 166 L 495 167 L 494 174 L 488 183 L 478 192 L 469 197 L 467 197 L 458 201 L 455 201 L 450 203 L 445 203 L 444 204 L 439 204 L 438 205 L 428 205 L 427 206 L 392 206 L 391 205 L 367 204 L 366 203 L 358 202 L 356 196 L 356 131 L 355 130 L 356 128 L 355 126 L 356 123 L 355 122 L 356 121 L 356 114 L 355 113 L 355 110 L 356 109 L 356 105 L 355 104 L 356 103 L 355 101 L 355 96 L 356 95 L 355 92 L 355 79 L 356 78 L 355 77 L 355 63 L 356 62 L 397 62 L 398 61 L 399 62 L 407 62 L 408 61 L 409 62 L 413 62 L 414 61 L 415 62 L 429 62 L 430 61 L 431 62 L 510 62 L 511 61 L 512 62 L 519 62 L 520 61 L 523 61 L 524 62 L 526 61 L 527 62 L 530 61 L 534 61 L 535 62 L 537 61 L 564 61 L 566 62 L 567 61 L 576 61 L 577 62 L 601 62 L 602 63 L 608 63 L 615 66 L 616 63 L 609 52 L 579 21 L 574 18 L 559 18 L 558 17 L 555 18 L 342 18 L 341 19 L 340 18 L 319 18 L 318 19 L 317 18 L 305 18 L 304 19 L 300 19 L 299 18 L 294 18 L 293 19 L 290 19 L 289 18 L 288 19 L 287 18 L 182 18 L 181 19 L 178 19 L 177 18 L 173 18 L 172 19 L 167 19 L 166 18 L 163 19 L 61 19 L 60 18 L 58 19 L 56 18 L 55 19 L 48 19 L 47 18 L 44 18 L 43 19 L 42 18 L 27 18 L 26 17 Z"/>
+            <path d="M60 46 L300 46 L300 69 L60 69 Z" fill="var(--bg)"/>
+            <path d="M370 46 L582 46 L582 69 L370 69 Z" fill="var(--bg)"/>
+          </svg>
+        </a>
+        <div class="nav-right">
+          <ul class="nav-links">
+            <li><a href="#top" class="active">Home</a></li>
+            <li><a href="#work">Work</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="https://drive.google.com/file/d/10lhE1zhiNUrbiW0yugNhFANyVvBpB5Ic/view?usp=sharing" target="_blank" rel="noopener">Resume</a></li>
+          </ul>
+          <div class="view-toggle" role="group" aria-label="View">
+            <span aria-current="page">Portfolio</span>
+            <a href="/ask"><i aria-hidden="true"></i>Ask</a>
+          </div>
+          <button id="theme-toggle" aria-label="Switch to light mode"><svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg></button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero">
+      <canvas id="particle-canvas"></canvas>
+      <div class="wrap hero-inner">
+        <span class="eyebrow">UX Designer • Experience Engineer • AI in the Loop</span>
+        <h1>Design that listens,<br><em>then pushes back.</em></h1>
+        <p class="hero-sub">It listens before it argues, then resists the easy answer,
+          because the parts that push back are usually the parts that hold.</p>
+      <a href="/ask" class="ask-link">Prefer a conversation? Ask me instead &rarr;</a>
+      </div>
+      <a href="#work" class="hero-scroll" aria-label="Scroll to work">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4v15M12 19l-6-6M12 19l6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </section>
+
+    <!-- WORK -->
+    <section id="work">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Selected Work</span>
+          <h2>A few things<br>worth showing</h2>
+        </div>
+
+        <div class="work-grid">
+          <a class="work-card" href="case-study-rbac.html">
+            <div class="card-thumb">
+              <div class="vig" aria-hidden="true"><div class="rb">
+                <div class="rb-top"><span>QUALITY RULES</span><span class="rb-role"><span class="admin">Admin</span><span class="viewer">Viewer</span></span></div>
+                <div class="rb-btns"><span>View</span><span>Edit</span><span class="create">+ Create</span></div>
+                <div class="rb-rows"><i></i><i></i><i></i></div>
+                <div class="rb-note"><span class="n1">Admin sees Create.</span><span class="n2">Viewer never sees it.</span></div>
+              </div></div>
+            </div>
+            <div class="card-body">
+              <span class="num">01</span>
+              <h3>RBAC: Permissions into Product</h3>
+              <p class="card-desc">Disabling buttons users could never use, instead of simply not showing them.</p>
+              <div class="work-tags"><span>UX</span><span>RBAC</span></div>
+            </div>
+          </a>
+          <a class="work-card" href="case-study-split.html">
+            <div class="card-thumb">
+              <div class="vig" aria-hidden="true"><svg class="sp" viewBox="0 0 400 225">
+                <path class="ln" d="M120 112 C170 112 180 45 236 45"/>
+                <path class="ln" d="M120 112 L236 112"/>
+                <path class="ln" d="M120 112 C170 112 180 180 236 180"/>
+                <path class="hot" pathLength="1" d="M120 112 C170 112 180 180 236 180"/>
+                <rect class="node" x="40" y="94" width="80" height="36" rx="8"/><text class="node-t" x="80" y="116" text-anchor="middle">Split</text>
+                <rect class="pill" x="236" y="31" width="120" height="28" rx="14"/><text x="296" y="49" text-anchor="middle">Branch_1</text>
+                <rect class="pill" x="236" y="98" width="120" height="28" rx="14"/><text x="296" y="116" text-anchor="middle">Branch_2</text>
+                <rect class="pill def" x="236" y="166" width="120" height="28" rx="14"/><text x="296" y="184" text-anchor="middle">Default path</text>
+                <text class="else" x="364" y="184">ELSE</text>
+              </svg></div>
+            </div>
+            <div class="card-body">
+              <span class="num">02</span>
+              <h3>Conditional Split Step</h3>
+              <p class="card-desc">Asking engineering to build new logic for behavior that already existed.</p>
+              <div class="work-tags"><span>Product Design</span><span>Workflow</span></div>
+            </div>
+          </a>
+          <a class="work-card" href="case-study-design-system.html">
+            <div class="card-thumb">
+              <img src="thumb-design-system.png" alt="Design system component library showing buttons and search variants" loading="lazy">
+              <div class="ov" aria-hidden="true"><span>Size</span><span class="seg"><u></u><b>S</b><b>M</b><b>L</b></span></div>
+            </div>
+            <div class="card-body">
+              <span class="num">03</span>
+              <h3>Design System</h3>
+              <p class="card-desc">Every team rebuilding the same button from scratch.</p>
+              <div class="work-tags"><span>Design Systems</span><span>Components</span></div>
+            </div>
+          </a>
+          <a class="work-card" href="case-study-copilot.html">
+            <div class="card-thumb">
+              <img src="thumb-copilot.png" alt="Insights Copilot internal AI assistant on mobile" loading="lazy">
+              <div class="ov ask" aria-hidden="true"><span class="q">Which jobs failed overnight?</span><span class="a">3 failed, 2 stale. Open the first.</span></div>
+            </div>
+            <div class="card-body">
+              <span class="num">04</span>
+              <h3>Insights Copilot: Internal AI Assistant</h3>
+              <p class="card-desc">Ten clicks before a first-time user saw any value.</p>
+              <div class="work-tags"><span>AI</span><span>Product</span></div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">About Me</span>
+          <h2>The short version</h2>
+        </div>
+        <div class="about-grid">
+          <div class="about-portrait" role="region" aria-label="Photo carousel" aria-roledescription="carousel">
+            <div class="about-slide is-active" role="group" aria-roledescription="slide" aria-label="1 of 3" aria-hidden="false">
+              <img src="images/about-photo-1.jpg" alt="Portrait at a waterfall lookout." width="768" height="1024" loading="eager" decoding="async">
+            </div>
+            <div class="about-slide" role="group" aria-roledescription="slide" aria-label="2 of 3" aria-hidden="true">
+              <img src="images/about-photo-2.jpg" alt="Portrait beside a pair of playful pink character statues." width="768" height="1024" loading="eager" decoding="async">
+            </div>
+            <div class="about-slide" role="group" aria-roledescription="slide" aria-label="3 of 3" aria-hidden="true">
+              <img src="images/about-photo-3.jpg" alt="Snorkeling in clear turquoise water beside a boat." width="768" height="1024" loading="eager" decoding="async">
+            </div>
+            <div class="about-carousel-controls">
+              <div class="about-carousel-dots" role="group" aria-label="Choose a photo">
+                <button class="about-carousel-dot" type="button" data-carousel-slide="0" aria-label="Show photo 1 of 3" aria-current="true"></button>
+                <button class="about-carousel-dot" type="button" data-carousel-slide="1" aria-label="Show photo 2 of 3" aria-current="false"></button>
+                <button class="about-carousel-dot" type="button" data-carousel-slide="2" aria-label="Show photo 3 of 3" aria-current="false"></button>
+              </div>
+            </div>
+          </div>
+          <div class="about-text">
+            <p class="pronunciation">The mark in the logo is <span class="mark">ऋ</span> — <em>ṛ</em>, said roughly like "ri." You don't need to read it to belong here; consider this the door held open.</p>
+            <p>Yes, Ritwik is usually a guy’s name. No, I’m not a guy. Yes, I’ve heard the question a hundred times, and yes, I’m still smiling. :)</p>
+            <p>I was a science kid who dodged engineering, chose colors over circuits, and somehow ended up living in VS Code with an engineer title anyway. The universe has jokes, and so do I.</p>
+            <p>I’m scared of lizards, water, heights and speed. I’m not scared of a challenge. Fear is just a very loud “this will be good,” which is why I keep saying yes to the things that make my pulse jump. I tell stories for a living, even when the medium is a button.</p>
+            <p>Off the clock, I’m shouting at F1 cars like they can hear me, cooking well above my skill level, or smashing shuttles across a badminton court. Not the right fit for a role? No hard feelings. But a match on court? Always.</p>
+
+            <div class="about-links">
+              <a href="https://www.behance.net/ritwiksrivast" target="_blank" rel="noopener">
+                <span class="label">Old Portfolio</span>
+                <span class="desc">Take a look at earlier work.</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="wrap">
+        <span class="eyebrow">Let's Connect</span>
+        <h2>Have a project<br>in mind?</h2>
+        <p class="lede">Whether it's a full engagement or just a conversation about
+          design, I'd love to hear from you.</p>
+        <a class="contact-email" href="mailto:sritwik243@gmail.com">sritwik243@gmail.com</a>
+        <div class="social-row">
+          <a href="https://www.linkedin.com/in/ritwik-srivastava-0970781a7/" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://www.behance.net/ritwiksrivast" target="_blank" rel="noopener">Behance</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© <span id="year"></span> Ritwik Srivastava</span>
+      <span>Built with intention</span>
+    </div>
+  </footer>
+
+<script>
+  // THEME TOGGLE — defaults to dark, remembers choice, respects
+  // system preference on first visit.
+  // ---------------------------------------------------------
+  const root = document.documentElement;
+  const themeToggle = document.getElementById('theme-toggle');
+  const lightModeIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg>';
+  const darkModeIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>';
+  let particleFill = 'rgba(95,165,150,0.55)';
+  let particleLine = (alpha) => `rgba(242,240,234,${alpha})`;
+
+  function refreshParticleColors(){
+    const styles = getComputedStyle(root);
+    const goldRgb = styles.getPropertyValue('--gold-rgb').trim();
+    const inkRgb = styles.getPropertyValue('--ink-rgb').trim();
+    particleFill = `rgba(${goldRgb},0.55)`;
+    particleLine = (alpha) => `rgba(${inkRgb},${alpha})`;
+  }
+
+  function applyTheme(theme){
+    root.setAttribute('data-theme', theme);
+    // Icon shown is the mode you'll switch TO: dark mode shows the
+    // light-mode icon (sun), light mode shows the dark-mode icon (moon).
+    themeToggle.innerHTML = theme === 'dark' ? lightModeIcon : darkModeIcon;
+    themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    localStorage.setItem('theme', theme);
+    refreshParticleColors();
+  }
+
+  const savedTheme = localStorage.getItem('theme');
+  const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+  applyTheme(savedTheme || (systemPrefersLight ? 'light' : 'dark'));
+
+  themeToggle.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  // ---------------------------------------------------------
+  // PARTICLE HERO BACKGROUND
+  // ---------------------------------------------------------
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let mouse = { x: null, y: null, radius: 130 };
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resizeCanvas(){
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    initParticles();
+  }
+
+  function initParticles(){
+    const count = Math.min(220, Math.floor((canvas.width * canvas.height) / 8000));
+    particles = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      r: Math.random() * 1.6 + 0.6
+    }));
+  }
+
+  function drawParticles(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for(let p of particles){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+      if(mouse.x !== null){
+        const dx = p.x - mouse.x, dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < mouse.radius){
+          const force = (mouse.radius - dist) / mouse.radius;
+          p.x += (dx / dist) * force * 1.4;
+          p.y += (dy / dist) * force * 1.4;
+        }
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = particleFill;
+      ctx.fill();
+    }
+
+    for(let i = 0; i < particles.length; i++){
+      for(let j = i + 1; j < particles.length; j++){
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < 120){
+          ctx.beginPath();
+          ctx.strokeStyle = particleLine(0.06 * (1 - dist/120));
+          ctx.lineWidth = 1;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    if(!reduceMotion) requestAnimationFrame(drawParticles);
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('load', resizeCanvas);
+  window.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  window.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+
+  resizeCanvas();
+  drawParticles();
+
+  // ABOUT PHOTO CAROUSEL
+  const aboutCarousel = document.querySelector('.about-portrait');
+  const aboutSlides = [...aboutCarousel.querySelectorAll('.about-slide')];
+  const aboutDots = [...aboutCarousel.querySelectorAll('[data-carousel-slide]')];
+  const carouselMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let currentAboutSlide = 0;
+  let carouselInView = false;
+  let carouselTimer = null;
+
+  function showAboutSlide(index){
+    currentAboutSlide = (index + aboutSlides.length) % aboutSlides.length;
+    aboutSlides.forEach((slide, slideIndex) => {
+      const active = slideIndex === currentAboutSlide;
+      slide.classList.toggle('is-active', active);
+      slide.setAttribute('aria-hidden', String(!active));
+      aboutDots[slideIndex].setAttribute('aria-current', String(active));
+    });
+  }
+
+  function stopAboutCarousel(){
+    window.clearInterval(carouselTimer);
+    carouselTimer = null;
+  }
+
+  function syncAboutCarousel(){
+    stopAboutCarousel();
+    if(carouselMotionPreference.matches || document.hidden || !carouselInView) return;
+    carouselTimer = window.setInterval(() => showAboutSlide(currentAboutSlide + 1), 3000);
+  }
+
+  aboutDots.forEach((dot, index) => dot.addEventListener('click', () => {
+    showAboutSlide(index);
+    syncAboutCarousel();
+  }));
+  document.addEventListener('visibilitychange', syncAboutCarousel);
+  carouselMotionPreference.addEventListener('change', syncAboutCarousel);
+  if('IntersectionObserver' in window){
+    const aboutCarouselObserver = new IntersectionObserver(([entry]) => {
+      carouselInView = entry.isIntersecting;
+      syncAboutCarousel();
+    }, { threshold: 0.25 });
+    aboutCarouselObserver.observe(aboutCarousel);
+  } else {
+    carouselInView = true;
+    syncAboutCarousel();
+  }
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ---------------------------------------------------------
+  // SCROLL-SPY — highlights the nav link for whichever section
+  // is currently in view, instead of leaving "Home" stuck active.
+  // ---------------------------------------------------------
+  const sectionIds = ['hero', 'work', 'about', 'contact'];
+  const navLinkFor = {
+    hero: document.querySelector('.nav-links a[href="#top"]'),
+    work: document.querySelector('.nav-links a[href="#work"]'),
+    about: document.querySelector('.nav-links a[href="#about"]'),
+    contact: document.querySelector('.nav-links a[href="#contact"]')
+  };
+  const observedSections = sectionIds
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+
+  const setActiveNav = (id) => {
+    Object.values(navLinkFor).forEach(link => link && link.classList.remove('active'));
+    const activeLink = navLinkFor[id];
+    if(activeLink) activeLink.classList.add('active');
+  };
+
+  if('IntersectionObserver' in window && observedSections.length){
+    const spyObserver = new IntersectionObserver((entries) => {
+      // Pick whichever observed section has the most visible area right now.
+      let best = null;
+      entries.forEach(entry => {
+        if(entry.isIntersecting && (!best || entry.intersectionRatio > best.intersectionRatio)){
+          best = entry;
+        }
+      });
+      if(best) setActiveNav(best.target.id);
+    }, { threshold: [0.25, 0.5, 0.75], rootMargin: '-90px 0px -40% 0px' });
+
+    observedSections.forEach(section => spyObserver.observe(section));
+  }
+</script>
+
+</body>
+</html>

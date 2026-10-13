@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design System: A Scalable Foundation for Insights CoPilot</title>
+<meta name="description" content="How a fragmented AI product became a unified, accessible, themeable design system: atomic structure, 120+ variables, 70+ components and light and dark modes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.svg?v=2" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png?v=2" sizes="32x32" type="image/png">
+<link rel="icon" href="favicon-16.png?v=2" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<link rel="icon" href="favicon.ico?v=2" sizes="any">
+<script>
+  /* Apply the shared theme before paint. */
+  try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+<style>
+  :root, [data-theme="dark"] {
+    --bg: #0B0B0E;
+    --surface: #141317;
+    --surface-2: #141317;
+    --line: rgba(242, 240, 234, 0.10);
+    --text: #F2F0EA;
+    --ink: #F2F0EA;
+    --muted: #8E8B85;
+    --accent: #5FA596;
+    --accent-ink: #0B0B0E;
+    --bg-rgb: 11, 11, 14;
+  }
+  [data-theme="light"] {
+    --bg: #FFFFFF;
+    --surface: #FFFFFF;
+    --surface-2: #FFFFFF;
+    --line: rgba(22, 24, 26, 0.10);
+    --text: #16181A;
+    --ink: #16181A;
+    --muted: #6B6E72;
+    --accent: #2D6C60;
+    --accent-ink: #FFFFFF;
+    --bg-rgb: 255, 255, 255;
+  }
+  [data-theme="light"] body {
+    background:
+      radial-gradient(38% 32% at 0% 0%, rgba(45, 108, 96, 0.05), transparent 65%),
+      radial-gradient(34% 30% at 100% 8%, rgba(45, 108, 96, 0.04), transparent 65%),
+      radial-gradient(40% 36% at 100% 100%, rgba(45, 108, 96, 0.04), transparent 65%),
+      var(--bg);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color .3s ease, color .3s ease;
+  }
+  p, li, h1, h2, h3 { text-wrap: pretty; }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+  .skip { position: absolute; left: -999px; top: 8px; background: var(--accent); color: var(--accent-ink); padding: 8px 14px; border-radius: 8px; z-index: 100; }
+  .skip:focus { left: 8px; }
+
+  /* Header */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 12px 0;
+    background: rgba(var(--bg-rgb), 0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-bottom: 1px solid var(--line);
+    transition: background 300ms ease;
+    line-height: normal;
+  }
+  header .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+  header nav { display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
+  header .logo { display: flex; align-items: center; flex-shrink: 0; }
+  header .logo-mark { display: block; width: 30px; height: 23px; }
+  .nav-right { display: flex; align-items: center; flex-wrap: nowrap; gap: 52px; flex-shrink: 0; }
+  .logo-mark path[fill="var(--ink)"] { transition: fill 220ms var(--ease); }
+  .logo:hover .logo-mark path[fill="var(--ink)"],
+  .logo:focus-visible .logo-mark path[fill="var(--ink)"] { fill: var(--accent); }
+  .nav-links { display: flex; align-items: center; flex-wrap: nowrap; gap: 34px; margin: 0; padding: 0; list-style: none; }
+  .nav-links li { display: flex; }
+  .nav-links a { font-weight: 400; font-size: 14px; letter-spacing: 0.02em; color: var(--text); transition: color 250ms ease; white-space: nowrap; text-decoration: none; position: relative; }
+  .nav-links a:hover { color: var(--muted); }
+  .nav-links a::after { content: ''; position: absolute; left: 0; bottom: -6px; width: 0; height: 1px; background: var(--accent); transition: width 300ms var(--ease); }
+  .nav-links a:hover::after { width: 100%; }
+  .view-toggle { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
+  .view-toggle > * { display: flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 999px; border: 1px solid transparent; color: var(--muted); text-decoration: none; }
+  .view-toggle [aria-current] { background: var(--surface); border-color: var(--line); color: var(--text); }
+  .view-toggle i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .view-toggle a:hover { color: var(--text); }
+  .view-toggle a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #theme-toggle {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--line); background: transparent; color: var(--text);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: border-color 300ms ease, color 300ms ease;
+  }
+  #theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Hero */
+  .hero { max-width: 1160px; margin: 0 auto; padding: 160px 32px 56px; border-bottom: 1px solid var(--line); }
+  .back-link { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); transition: color 250ms ease; text-decoration: none; }
+  .back-link:hover { color: var(--accent); }
+  .hero-intro { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 22px; margin-bottom: 24px; }
+  .hero-intro .eyebrow { margin: 0; }
+  .eyebrow { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-weight: 600; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  .hero .eyebrow { margin-bottom: 0; }
+  h1, h2, h3 { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  h1 { font-weight: 700; font-size: clamp(28px, 3.6vw, 42px); line-height: 1.2; max-width: 24ch; }
+  .hero h1 { margin-top: 14px; }
+  .lede { margin-top: 18px; max-width: 640px; font-size: 16px; line-height: 1.65; color: var(--muted); }
+  .meta { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 24px 44px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .meta dt { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .meta dd { font-size: 15.5px; }
+
+  .wide { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
+  figure.shot { border-radius: 20px; overflow: hidden; }
+  figure.shot img { width: 100%; }
+  figcaption { font-size: 14px; color: var(--muted); margin-top: 12px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; margin-top: 32px; }
+  .stat { background: var(--surface); padding: 26px 24px; }
+  .stat b { display: block; font-weight: 600; font-size: 36px; line-height: 1.05; color: var(--accent); letter-spacing: -0.02em; }
+  .stat span { display: block; margin-top: 10px; font-size: 15px; font-weight: 500; }
+  .stat small { display: block; margin-top: 4px; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+
+  /* Layout with scroll-spy rail */
+  .layout { max-width: 1160px; margin: 0 auto; padding: 56px 32px 100px; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 72px; }
+  .rail { position: sticky; top: 96px; align-self: start; display: flex; flex-direction: column; gap: 14px; }
+  .rail ol { list-style: none; border-left: 1px solid var(--line); }
+  .rail a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; font-size: 14px; color: var(--muted); text-decoration: none; }
+  .rail a:hover { color: var(--text); }
+  .rail a.active { color: var(--accent); border-left-color: var(--accent); }
+  .rail-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+
+  section.block { padding: 0 0 64px; }
+  section.block:last-child { padding-bottom: 0; }
+  .num { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; letter-spacing: .14em; color: var(--accent); }
+  h2 { font-size: 22px; line-height: 1.2; font-weight: 700; margin: 10px 0 20px; max-width: 28ch; }
+  h3 { font-size: 16px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+  .block > p { max-width: 64ch; font-size: 15.5px; line-height: 1.75; color: var(--muted); margin-bottom: 16px; }
+  .block > p strong { color: var(--text); font-weight: 500; }
+  .block figure { margin-top: 32px; }
+
+  .grid4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 32px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+  .card p { font-size: 15.5px; color: var(--muted); }
+  .card .tag { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; display: block; }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+
+  .callout { margin-top: 32px; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; align-items: end; padding: 32px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; }
+  .callout p.big { font-size: clamp(20px, 2.4vw, 26px); line-height: 1.3; font-weight: 500; }
+  .callout .n b { display: block; font-weight: 600; font-size: 32px; color: var(--accent); line-height: 1.1; }
+  .callout .n span { font-size: 14.5px; color: var(--muted); }
+
+  .scale { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; font-size: 13.5px; color: var(--muted); }
+  .chip em { font-style: normal; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); margin-left: 6px; }
+
+  .team { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+  .team span { border: 1px solid var(--line); border-radius: 999px; padding: 8px 18px; background: var(--surface); }
+
+  .next-project { padding: 64px 0 100px; border-top: 1px solid var(--line); }
+  .next-project .wrap { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
+  footer .wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+  .next-project .eyebrow { display: block; margin-bottom: 14px; }
+  .next-project h2 { font-size: 24px; }
+  .next-project a.cta { display: inline-flex; align-items: center; gap: 10px; margin-top: 20px; font-size: 14px; color: var(--accent); border-bottom: 1px solid var(--line); padding-bottom: 5px; text-decoration: none; }
+  .next-project a.cta:hover { border-color: var(--accent); }
+  footer { padding: 36px 0 48px; border-top: 1px solid var(--line); margin-top: 60px; line-height: normal; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; letter-spacing: .06em; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; gap: 40px; }
+    .rail { position: static; flex-direction: row; flex-wrap: wrap; gap: 18px 24px; }
+    .rail-title { width: 100%; }
+    .rail ol { display: contents; border: 0; }
+    .rail li { display: flex; }
+    .rail a { padding: 0 0 4px; margin: 0; border-left: 0; border-bottom: 2px solid transparent; }
+    .rail a.active { border-bottom-color: var(--accent); }
+    .meta, .stats { grid-template-columns: repeat(2, 1fr); }
+    .grid3 { grid-template-columns: 1fr; }
+    .callout { grid-template-columns: 1fr 1fr; }
+    .callout p.big { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    .hero { padding: 160px 24px 48px; }
+    .wide, .layout { padding-right: 24px; padding-left: 24px; }
+    .grid4 { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    footer .wrap { align-items: flex-start; flex-direction: column; gap: 8px; }
+    .stat b { font-size: 36px; }
+  }
+  @media (max-width: 900px) { .nav-right { gap: 18px; } }
+  @media (max-width:720px){
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 12px; }
+    .nav-right { gap: 12px; }
+  }
+  @media (max-width: 720px) { .nav-links { display: none; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#overview">Skip to content</a>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a href="index.html" class="logo" aria-label="Home">
+        <svg class="logo-mark" width="30" height="23" viewBox="0 0 640 490" role="img" aria-label="ऱ calligraphy logo" xmlns="http://www.w3.org/2000/svg">
+            <path fill="var(--ink)" fill-rule="evenodd" d="M 20 17 L 20 20 L 25 28 L 44 47 L 45 47 L 58 59 L 68 64 L 151 64 L 152 63 L 220 63 L 221 62 L 312 62 L 313 63 L 313 71 L 314 72 L 313 75 L 314 78 L 314 100 L 313 101 L 314 102 L 314 155 L 315 156 L 314 157 L 314 167 L 315 168 L 314 169 L 315 172 L 314 173 L 314 180 L 315 181 L 314 184 L 315 186 L 315 190 L 314 191 L 315 193 L 315 208 L 314 209 L 297 187 L 285 175 L 285 174 L 259 152 L 256 151 L 244 143 L 238 140 L 236 140 L 229 136 L 214 131 L 201 129 L 200 128 L 193 128 L 192 127 L 165 127 L 164 128 L 152 129 L 151 130 L 148 130 L 147 131 L 144 131 L 138 133 L 117 143 L 109 148 L 100 155 L 89 166 L 88 168 L 88 173 L 117 203 L 133 215 L 135 214 L 134 212 L 134 204 L 137 197 L 141 192 L 152 182 L 170 172 L 182 168 L 189 167 L 190 166 L 204 165 L 205 164 L 223 164 L 224 165 L 232 165 L 233 166 L 238 166 L 246 169 L 249 169 L 257 173 L 259 173 L 275 183 L 287 195 L 296 208 L 292 211 L 279 215 L 251 233 L 209 265 L 175 293 L 165 300 L 160 305 L 133 325 L 122 331 L 113 334 L 104 334 L 99 332 L 98 333 L 99 335 L 107 343 L 116 350 L 129 357 L 135 359 L 140 359 L 141 360 L 153 359 L 171 351 L 192 336 L 283 260 L 296 251 L 300 247 L 314 238 L 315 239 L 315 281 L 316 282 L 315 283 L 316 284 L 316 289 L 315 291 L 316 292 L 316 349 L 317 350 L 316 352 L 316 358 L 317 359 L 317 381 L 318 382 L 318 385 L 319 386 L 319 389 L 322 398 L 331 415 L 344 432 L 359 446 L 373 456 L 384 462 L 402 468 L 413 469 L 407 466 L 405 466 L 403 464 L 398 462 L 389 455 L 378 443 L 372 434 L 367 424 L 363 412 L 362 405 L 361 404 L 360 387 L 359 386 L 359 369 L 358 368 L 359 365 L 358 364 L 357 253 L 356 252 L 357 250 L 357 243 L 356 242 L 356 232 L 357 231 L 357 228 L 358 227 L 362 229 L 369 230 L 373 232 L 376 232 L 385 235 L 389 235 L 390 236 L 398 237 L 399 238 L 404 238 L 405 239 L 410 239 L 411 240 L 416 240 L 417 241 L 440 242 L 441 243 L 455 243 L 456 242 L 464 242 L 465 241 L 477 240 L 485 248 L 489 255 L 491 261 L 491 266 L 492 267 L 491 274 L 489 278 L 482 285 L 466 295 L 449 311 L 439 327 L 436 336 L 436 340 L 435 341 L 435 355 L 436 356 L 437 364 L 442 376 L 454 394 L 472 412 L 489 424 L 508 433 L 514 435 L 517 435 L 518 436 L 521 436 L 522 437 L 526 437 L 527 438 L 548 438 L 549 437 L 553 437 L 554 436 L 557 436 L 563 434 L 576 427 L 576 426 L 570 429 L 564 430 L 563 431 L 559 431 L 558 432 L 541 432 L 540 431 L 535 431 L 534 430 L 531 430 L 525 428 L 513 422 L 498 411 L 486 398 L 476 382 L 476 380 L 473 374 L 472 366 L 471 365 L 472 350 L 476 340 L 482 331 L 499 315 L 515 306 L 523 304 L 525 300 L 524 298 L 525 295 L 524 294 L 522 284 L 513 265 L 502 249 L 488 235 L 490 233 L 492 233 L 502 228 L 504 228 L 506 226 L 517 220 L 532 206 L 534 202 L 537 199 L 543 185 L 544 175 L 545 174 L 545 168 L 544 167 L 543 158 L 538 147 L 527 135 L 519 130 L 510 127 L 507 125 L 498 124 L 497 123 L 477 123 L 476 124 L 469 124 L 468 125 L 461 126 L 449 130 L 449 131 L 452 130 L 458 130 L 459 131 L 466 131 L 475 134 L 485 140 L 490 145 L 495 154 L 495 157 L 496 158 L 496 166 L 495 167 L 494 174 L 488 183 L 478 192 L 469 197 L 467 197 L 458 201 L 455 201 L 450 203 L 445 203 L 444 204 L 439 204 L 438 205 L 428 205 L 427 206 L 392 206 L 391 205 L 367 204 L 366 203 L 358 202 L 356 196 L 356 131 L 355 130 L 356 128 L 355 126 L 356 123 L 355 122 L 356 121 L 356 114 L 355 113 L 355 110 L 356 109 L 356 105 L 355 104 L 356 103 L 355 101 L 355 96 L 356 95 L 355 92 L 355 79 L 356 78 L 355 77 L 355 63 L 356 62 L 397 62 L 398 61 L 399 62 L 407 62 L 408 61 L 409 62 L 413 62 L 414 61 L 415 62 L 429 62 L 430 61 L 431 62 L 510 62 L 511 61 L 512 62 L 519 62 L 520 61 L 523 61 L 524 62 L 526 61 L 527 62 L 530 61 L 534 61 L 535 62 L 537 61 L 564 61 L 566 62 L 567 61 L 576 61 L 577 62 L 601 62 L 602 63 L 608 63 L 615 66 L 616 63 L 609 52 L 579 21 L 574 18 L 559 18 L 558 17 L 555 18 L 342 18 L 341 19 L 340 18 L 319 18 L 318 19 L 317 18 L 305 18 L 304 19 L 300 19 L 299 18 L 294 18 L 293 19 L 290 19 L 289 18 L 288 19 L 287 18 L 182 18 L 181 19 L 178 19 L 177 18 L 173 18 L 172 19 L 167 19 L 166 18 L 163 19 L 61 19 L 60 18 L 58 19 L 56 18 L 55 19 L 48 19 L 47 18 L 44 18 L 43 19 L 42 18 L 27 18 L 26 17 Z"/>
+            <path d="M60 46 L300 46 L300 69 L60 69 Z" fill="var(--bg)"/>
+            <path d="M370 46 L582 46 L582 69 L370 69 Z" fill="var(--bg)"/>
+          </svg>
+      </a>
+      <div class="nav-right">
+        <ul class="nav-links">
+          <li><a href="index.html#top">Home</a></li>
+          <li><a href="index.html#work">Work</a></li>
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+          <li><a href="https://drive.google.com/file/d/10lhE1zhiNUrbiW0yugNhFANyVvBpB5Ic/view?usp=sharing" target="_blank" rel="noopener">Resume</a></li>
+        </ul>
+        <div class="view-toggle" role="group" aria-label="View">
+          <span aria-current="page">Portfolio</span>
+          <a href="/ask"><i aria-hidden="true"></i>Ask</a>
+        </div>
+        <button id="theme-toggle" type="button" aria-label="Switch to light mode"><svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor" aria-hidden="true"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg></button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="hero-intro">
+      <a href="index.html#work" class="back-link">← Back to work</a>
+      <p class="eyebrow">Case study · Design system</p>
+    </div>
+    <h1>A scalable foundation for Insights CoPilot</h1>
+    <p class="lede">From fragmented UI to a unified system, the design system defined structure, consistency, and trust, enabling scale across ABI's AI ecosystem.</p>
+    <dl class="meta">
+      <div><dt>Product</dt><dd>Insights CoPilot, ABI</dd></div>
+      <div><dt>Year</dt><dd>2025</dd></div>
+      <div><dt>Scope</dt><dd>Foundations, components, theming</dd></div>
+      <div><dt>Team</dt><dd>Ritwik, Arjan, Fill</dd></div>
+    </dl>
+  </div>
+
+  <div class="wide">
+    <figure class="shot">
+      <img src="images/design-system/ds-hero.jpg" width="2000" height="1229" alt="Collage of Insights CoPilot brand tiles in black and yellow, including the CoPilot mark, a dot grid, and the headline numbers 100 percent and 12 ha/H.">
+    </figure>
+  </div>
+
+  <div class="layout">
+    <aside class="rail" aria-label="On this page">
+      <span class="rail-title">Contents</span>
+      <ol id="spy">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#problem">Why we built it</a></li>
+        <li><a href="#approach">Approach</a></li>
+        <li><a href="#foundations">Design DNA</a></li>
+        <li><a href="#components">Smart components</a></li>
+        <li><a href="#theming">Light and dark</a></li>
+        <li><a href="#type">Typography</a></li>
+        <li><a href="#impact">Impact</a></li>
+        <li><a href="#next">What's next</a></li>
+        <li><a href="#team">Team</a></li>
+      </ol>
+    </aside>
+
+    <div class="content">
+      <section class="block" id="overview" style="padding-top:48px">
+        <span class="num">01</span>
+        <h2>More than a component library</h2>
+        <p>Insights CoPilot is an AI assistant for ABI. As it grew, its interface needed a shared backbone. The design system is that backbone: <strong>a foundation that unifies design and development while enabling growth at scale.</strong></p>
+      </section>
+
+      <section class="block" id="problem">
+        <span class="num">02</span>
+        <h2>Why did we start building it?</h2>
+        <p>As CoPilot grew in adoption, the product began to face the weight of scale. Small inconsistencies in design and interaction patterns started to multiply, creating friction for both users and teams.</p>
+        <div class="grid4">
+          <div class="card"><span class="tag">UI</span><h3>Inconsistent UI</h3><p>Buttons, chatbars, and labels appeared differently across versions.</p></div>
+          <div class="card"><span class="tag">UX</span><h3>Fragmented UX</h3><p>Users struggled with trust due to mismatched visuals and flows.</p></div>
+          <div class="card"><span class="tag">Risk</span><h3>Scalability risks</h3><p>Every new feature risked adding more inconsistency without a shared system.</p></div>
+          <div class="card"><span class="tag">Delivery</span><h3>Slowed delivery</h3><p>Lack of standard components led to rework and longer handoffs.</p></div>
+        </div>
+      </section>
+
+      <section class="block" id="approach">
+        <span class="num">03</span>
+        <h2>Built on atomic design principles</h2>
+        <p>The goal was not only to unify the look and feel but to create a system that designers and developers could both trust and scale with. By breaking the interface into clear building blocks, we established a foundation that was <strong>reusable, accessible, and consistent</strong> across every interaction in CoPilot.</p>
+        <figure class="shot">
+          <img src="images/design-system/ds-atomic.jpg" width="2000" height="446" alt="Three cards. Atoms: colors, text, buttons, shown as two icon buttons. Molecules: input plus label and chatbar, shown as a select and a tag. Organisms: header or chat window, shown as the CoPilot sidebar.">
+        </figure>
+        <figure class="shot">
+          <img src="images/design-system/ds-logo.jpg" width="2000" height="1035" alt="The CoPilot mark in yellow, black, and white app icon variants beside a construction grid of the mark.">
+          <figcaption>The CoPilot mark, constructed on a grid and applied across accent, dark, and light app icons.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="foundations">
+        <span class="num">04</span>
+        <h2>The Design DNA</h2>
+        <p>Smart foundations built to balance simplicity with depth. Effortless to use, robust enough to grow with the system. Colors, sizes, and fonts live in variables, so a single change flows through every component that uses it.</p>
+        <figure class="shot">
+          <img src="images/design-system/ds-variables.jpg" width="2000" height="1058" alt="Variables panels listing component size properties for buttons, icon buttons and fields, beside a color table with dark and light mode values for the secondary yellow scale from 100 to 900.">
+        </figure>
+        <div class="callout">
+          <p class="big">A core setup that stays intuitive for designers yet adaptable for complex scenarios.</p>
+          <div class="n"><b>120+</b><span>variables</span></div>
+          <div class="n"><b>30%</b><span>faster iterations</span></div>
+        </div>
+        <figure class="shot">
+          <img src="images/design-system/ds-type-brand.jpg" width="2000" height="1034" alt="Left: the lowercase letter a in Avantt, the system typeface, in weights Light, Regular, Semi-Bold and Bold. Right: a hand holding a phone showing the CoPilot mark on yellow.">
+        </figure>
+      </section>
+
+      <section class="block" id="components">
+        <span class="num">05</span>
+        <h2>Smart components</h2>
+        <p>All components were built with customizable properties, making them easy to adapt, manage, and scale without creating clutter. Simple to tweak, powerful to use, and consistent across every screen.</p>
+        <div class="grid3" style="grid-template-columns:1fr;gap:20px">
+          <figure class="shot" style="margin:0">
+            <img src="images/design-system/ds-size-variables.jpg" width="2000" height="825" alt="Three yellow buttons in Large, Medium and Small sizes beside a Size variables control set to Large.">
+            <figcaption><strong style="color:var(--text);font-weight:500">Size variables.</strong> Change the size of any component with one property.</figcaption>
+          </figure>
+          <figure class="shot" style="margin:0">
+            <img src="images/design-system/ds-state.jpg" width="2000" height="768" alt="A Search component's properties panel with Variant, State, leading icon and trailing icon toggles, next to the rounded search field in two states.">
+            <figcaption><strong style="color:var(--text);font-weight:500">State management.</strong> Intuitive setup, easy to switch, simple to manage.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="block" id="theming">
+        <span class="num">06</span>
+        <h2>One system, two themes, zero extra effort</h2>
+        <p>We extended the system to support light mode by tying it directly to our variable setup. Colors, text, and surfaces switch seamlessly without rebuilding components. This not only made theme switching effortless but also improved accessibility by giving users more choice and comfort in different environments.</p>
+        <figure class="shot">
+          <img src="images/design-system/ds-theming.jpg" width="2000" height="1694" alt="A Color variable mode picker set to Light Mode over a dark graphic, with the CoPilot sidebar shown in light mode, expanded and collapsed.">
+        </figure>
+      </section>
+
+      <section class="block" id="type">
+        <span class="num">07</span>
+        <h2>Type scaled for clarity and consistency</h2>
+        <p>We defined a type system that balances clarity with hierarchy. Scales, weights, and styles were set to make content easy to read, consistent across screens, and adaptable for both light and dark modes. This ensured communication in CoPilot feels professional, accessible, and effortless to follow.</p>
+        <figure class="shot">
+          <img src="images/design-system/ds-typescale.jpg" width="2000" height="1010" alt="Type scale in Avantt across four weights, Bold, Semi Bold, Regular and Light, from Display 40 down to Info 12.">
+        </figure>
+        <div class="scale" aria-label="Type scale">
+          <span class="chip">Display 40<em>2.45em</em></span>
+          <span class="chip">Display 36<em>2.25em</em></span>
+          <span class="chip">Display 32<em>2em</em></span>
+          <span class="chip">Heading 28<em>1.75em</em></span>
+          <span class="chip">Title 24<em>1.5em</em></span>
+          <span class="chip">Sub 20<em>1.25em</em></span>
+          <span class="chip">Paragraph 18<em>1.12em</em></span>
+          <span class="chip">Paragraph 16<em>1em</em></span>
+          <span class="chip">Info 14<em>0.875em</em></span>
+          <span class="chip">Info 12<em>0.75em</em></span>
+        </div>
+      </section>
+
+      <section class="block" id="impact">
+        <span class="num">08</span>
+        <h2>Numbers that tell the story</h2>
+        <p>The design system became more than a library of components. It served as the backbone for how CoPilot scaled.</p>
+        <div class="stats" role="list">
+          <div class="stat" role="listitem"><b>70+</b><span>reusable components</span><small>Shipped across chat, dashboards, and insights</small></div>
+          <div class="stat" role="listitem"><b>&gt;90%</b><span>adoption rate</span><small>Across pilot teams in the past 6 months</small></div>
+          <div class="stat" role="listitem"><b>30%</b><span>faster ideation cycles</span><small>From concept to prototype</small></div>
+          <div class="stat" role="listitem"><b>150+</b><span>screens standardized</span><small>Using the design system library</small></div>
+        </div>
+      </section>
+
+      <section class="block" id="next">
+        <span class="num">09</span>
+        <h2>What's next: CoPilot on mobile</h2>
+        <p>With adoption strong on desktop, bringing CoPilot to mobile is the next step. The system is already equipped with responsive variables and scalable components, making the transition smoother. Mobile design is currently in progress, focused on adapting patterns for smaller screens while keeping the same consistency and clarity.</p>
+        <figure class="shot">
+          <img src="images/design-system/ds-mobile.jpg" width="2000" height="875" alt="A phone resting on a concrete block showing the CoPilot mobile concept in yellow and black.">
+        </figure>
+      </section>
+
+      <section class="block" id="team">
+        <span class="num">10</span>
+        <h2>Meet the team</h2>
+        <p>Behind the visuals and brand assets of Insights CoPilot is a small but focused team that shaped the system from idea to impact.</p>
+        <div class="team"><span>Ritwik</span><span>Arjan</span><span>Fill</span></div>
+      </section>
+    </div>
+  </div>
+  <section class="next-project">
+    <div class="wrap">
+      <span class="eyebrow">Next Project</span>
+      <h2>See what else has been built</h2>
+      <a href="index.html#work" class="cta">Back to all work →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="year"></span> Ritwik Srivastava</span>
+    <span>Built with intention</span>
+  </div>
+</footer>
+
+<script>
+  const root = document.documentElement;
+  const themeToggle = document.getElementById('theme-toggle');
+  const lightModeIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg>';
+  const darkModeIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>';
+
+  function applyTheme(theme) {
+    root.setAttribute('data-theme', theme);
+    themeToggle.innerHTML = theme === 'dark' ? lightModeIcon : darkModeIcon;
+    themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    localStorage.setItem('theme', theme);
+  }
+
+  const savedTheme = localStorage.getItem('theme');
+  const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+  applyTheme(savedTheme || (systemPrefersLight ? 'light' : 'dark'));
+  themeToggle.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* Scroll-spy */
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('#spy a'));
+    var map = {};
+    links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          links.forEach(function (a) { a.classList.remove('active'); a.removeAttribute('aria-current'); });
+          var a = map[e.target.id];
+          if (a) { a.classList.add('active'); a.setAttribute('aria-current', 'true'); }
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+    Object.keys(map).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+  })();
+</script>
+</body>
+</html>
