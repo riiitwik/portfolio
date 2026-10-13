@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  try {
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') === 'light' ? 'light' : 'dark');
+  } catch (error) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+</script>
 <title>Ritwik - UX Designer & Experience Engineer</title>
 <meta name="description" content="Portfolio of Ritwik, a UX designer and experience engineer creating thoughtful digital experiences.">
 
@@ -792,19 +799,17 @@
     particleLine = (alpha) => `rgba(${inkRgb},${alpha})`;
   }
 
-  function applyTheme(theme){
+  function applyTheme(theme, save = true){
     root.setAttribute('data-theme', theme);
     // Icon shown is the mode you'll switch TO: dark mode shows the
     // light-mode icon (sun), light mode shows the dark-mode icon (moon).
     themeToggle.innerHTML = theme === 'dark' ? lightModeIcon : darkModeIcon;
     themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-    localStorage.setItem('theme', theme);
+    if(save) localStorage.setItem('theme', theme);
     refreshParticleColors();
   }
 
-  const savedTheme = localStorage.getItem('theme');
-  const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-  applyTheme(savedTheme || (systemPrefersLight ? 'light' : 'dark'));
+  applyTheme(root.getAttribute('data-theme'), false);
 
   themeToggle.addEventListener('click', () => {
     const current = root.getAttribute('data-theme');

@@ -13,7 +13,13 @@
     <link rel="icon" href="favicon-16.png?v=2" sizes="16x16" type="image/png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
     <link rel="icon" href="favicon.ico?v=2" sizes="any">
-<script>try{var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>
+  try {
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') === 'light' ? 'light' : 'dark');
+  } catch (error) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+</script>
 <style>
 :root{--bg:#0A0B0D;--bg-rgb:10,11,13;--surface:#101316;--raised:#14181A;--ink:#F2F0EA;--dim:#8D979B;--accent:#5FA596;--accent-rgb:95,165,150;--accent-dim:#2E4A45;--line:rgba(255,255,255,.08);--resist:#E2724A;--ease:cubic-bezier(.16,.84,.44,1)}
 html[data-theme="light"]{--bg:#F7F7F4;--bg-rgb:247,247,244;--surface:#FFFFFF;--raised:#FFFFFF;--ink:#17181A;--dim:#5B666A;--accent:#2D6C60;--accent-rgb:45,108,96;--accent-dim:#C3DCD5;--line:rgba(0,0,0,.1);--resist:#B8512C}
