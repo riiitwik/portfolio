@@ -261,12 +261,17 @@ wipChip.addEventListener('mouseleave',()=>{
 });
 wipChip.addEventListener('blur',()=>wipChip.classList.remove('tooltip-dismissed'));
 const ENDPOINT='/api/ask';
-const QUESTION_POOL={
-  decision:['What was the hardest call on RBAC?','What did you cut, and why?','When did a stakeholder disagree with you?','Where did research change the design?'],
-  project:['Why is routing native in Conditional Split?','What would you redo in Insights Copilot?','What did the design system fix?','How did RBAC change the product?'],
-  craft:['How do you design for permissions?','What does design pushing back look like?','How do you keep a design system alive?','What do you prototype in code?'],
-  role:['How do you work with engineers?','Why design and engineering both?','What is a typical week like?','What are you working on right now?']
-};
+const QUESTION_POOL=[
+  'What was the hardest call on RBAC?',
+  'What did you cut, and why?',
+  'When did a stakeholder disagree with you?',
+  'Where did research change the design?',
+  'Why is routing native in Conditional Split?',
+  'What would you redo in Insights Copilot?',
+  'What did the design system fix?',
+  'How did RBAC change the product?',
+  'Are you open to new roles?'
+];
 const CASES={
   rbac:{t:'RBAC: Permissions into Product',s:'Hide, do not disable.',href:'case-study-rbac.html',src:'case study, RBAC'},
   split:{t:'Conditional Split Step',s:'Reuse the ELSE logic that already existed.',href:'case-study-split.html',src:'case study, Conditional Split'},
@@ -343,14 +348,17 @@ function renderChips(){
   }catch(e){
     console.warn('Could not load previously shown suggestions.',e);
   }
-  const selected=Object.values(QUESTION_POOL).map(questions=>{
-    const fresh=questions.filter(question=>!lastChips.includes(question));
-    const options=fresh.length?fresh:questions;
-    return options[Math.floor(Math.random()*options.length)];
-  });
-  for(let i=selected.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [selected[i],selected[j]]=[selected[j],selected[i]];
+  const fresh=QUESTION_POOL.filter(question=>!lastChips.includes(question));
+  const pool=fresh.length?fresh:QUESTION_POOL;
+  const selected=[];
+  while(selected.length<4 && pool.length){
+    const index=Math.floor(Math.random()*pool.length);
+    const question=pool.splice(index,1)[0];
+    if(!selected.includes(question))selected.push(question);
+  }
+  while(selected.length<4){
+    const fallback=QUESTION_POOL[Math.floor(Math.random()*QUESTION_POOL.length)];
+    if(!selected.includes(fallback))selected.push(fallback);
   }
   try{localStorage.setItem('lastChips',JSON.stringify(selected))}
   catch(e){console.warn('Could not save shown suggestions.',e)}

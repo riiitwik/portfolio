@@ -4,18 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
+  document.documentElement.classList.add('js');
+  const heroEntranceFallback = window.setTimeout(() => document.documentElement.classList.add('hero-in'), 600);
   try {
     document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') === 'light' ? 'light' : 'dark');
   } catch (error) {
     document.documentElement.setAttribute('data-theme', 'dark');
   }
 </script>
-<title>Ritwik - UX Designer & Experience Engineer</title>
-<meta name="description" content="Portfolio of Ritwik, a UX designer and experience engineer creating thoughtful digital experiences.">
+<title>Ritwik | UX Designer and Experience Engineer</title>
+<meta name="description" content="Ritwik is a UX designer and experience engineer with 3+ years designing from research through to shipped code, based in Bangalore, India.">
+<meta property="og:title" content="Ritwik | UX Designer and Experience Engineer">
+<meta property="og:description" content="Ritwik is a UX designer and experience engineer with 3+ years designing from research through to shipped code, based in Bangalore, India.">
+<meta property="og:type" content="website">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
   /* =========================================================
@@ -250,6 +255,113 @@
     font-size:17px;
     line-height:1.6;
   }
+  .hero-meta{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:16px;
+    max-width:520px;
+    margin-top:34px;
+    padding-top:14px;
+    border-top:0.5px solid transparent;
+    position:relative;
+    --d:700;
+  }
+  .hero-meta::before{
+    content:'';
+    position:absolute;
+    top:-0.5px;
+    left:0;
+    right:0;
+    border-top:0.5px solid var(--line);
+    transform:scaleX(1);
+    transform-origin:left;
+  }
+  .hero-meta div{ min-width:0; }
+  .hero-meta dt{
+    margin-bottom:5px;
+    color:var(--ink-dim);
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+  }
+  .hero-meta dd{
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:15px;
+    text-wrap:pretty;
+  }
+  .hero-meta > div{ position:relative; }
+  .hero-heading-line{
+    display:block;
+    overflow:hidden;
+    height:1.05em;
+    padding-bottom:0.08em;
+  }
+  .hero-heading-text{ display:block; }
+  .hero-fade-up{ --d:0; }
+  .hero-meta > div{ --d:0; }
+  html.js header,
+  html.js #particle-canvas,
+  html.js #hero .hero-fade-up,
+  html.js #hero .hero-heading-text,
+  html.js #hero .hero-meta::before,
+  html.js #hero .hero-meta > div{
+    opacity:0;
+  }
+  html.js #hero .hero-fade-up{ transform:translateY(12px); }
+  html.js #hero .hero-heading-text{ transform:translateY(105%); }
+  html.js #hero .hero-meta::before{ transform:scaleX(0); }
+  html.hero-in header{
+    animation:heroFade 500ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--d) * 1ms) forwards;
+  }
+  html.hero-in #particle-canvas{
+    animation:heroCanvasFade 1200ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--d) * 1ms) forwards;
+  }
+  html.hero-in #hero .hero-fade-up{
+    animation:heroFadeUp 700ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--d) * 1ms) forwards;
+  }
+  html.hero-in #hero .hero-heading-text{
+    animation:heroMaskedRise 900ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--d) * 1ms) forwards;
+  }
+  html.hero-in #hero .hero-meta::before{
+    animation:heroRuleDraw 800ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--d) * 1ms) forwards;
+  }
+  html.hero-in #hero .hero-scroll.is-bouncing{
+    animation:scrollBounce 2.2s ease-in-out infinite;
+  }
+  @keyframes heroFade{
+    from{ opacity:0; }
+    to{ opacity:1; }
+  }
+  @keyframes heroCanvasFade{
+    from{ opacity:0; }
+    to{ opacity:1; }
+  }
+  @keyframes heroFadeUp{
+    from{ opacity:0; transform:translateY(12px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes heroMaskedRise{
+    from{ opacity:0; transform:translateY(105%); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes heroRuleDraw{
+    from{ opacity:1; transform:scaleX(0); }
+    to{ opacity:1; transform:scaleX(1); }
+  }
+  @media (max-width:640px){
+    .hero-meta{
+      grid-template-columns:minmax(0, 1fr);
+      gap:12px;
+    }
+  }
+  @media (max-width:360px){
+    .hero-heading-line{
+      height:auto;
+      min-height:1.05em;
+    }
+  }
   .hero-scroll{
     position:absolute; bottom:40px;
     left:max(32px, calc((100vw - 1120px) / 2 + 32px));
@@ -259,8 +371,10 @@
     display:flex; align-items:center; justify-content:center;
     color:var(--ink);
     transition:border-color 300ms var(--ease), color 300ms var(--ease);
-    animation: scrollBounce 2.2s ease-in-out infinite;
+    --d:1100;
   }
+  html:not(.js) #hero .hero-scroll,
+  .hero-scroll.is-bouncing{ animation:scrollBounce 2.2s ease-in-out infinite; }
   .hero-scroll:hover{ border-color:var(--gold); color:var(--gold); }
   .hero-scroll svg{ width:16px; height:16px; }
   @keyframes scrollBounce{
@@ -269,6 +383,16 @@
   }
   @media (prefers-reduced-motion: reduce){
     .hero-scroll{ animation:none; }
+    html.js #hero .hero-fade-up,
+    html.js #hero .hero-heading-text,
+    html.js #hero .hero-meta::before,
+    html.js #hero .hero-meta > div,
+    html.js header,
+    html.js #particle-canvas{
+      animation:none !important;
+      opacity:1;
+      transform:none;
+    }
   }
 
   /* =========================================================
@@ -593,7 +717,7 @@
 </head>
 <body id="top">
 
-  <header>
+  <header style="--d:0">
     <div class="wrap">
       <nav>
         <a href="index.html" class="logo" aria-label="Home">
@@ -624,15 +748,29 @@
   <main>
     <!-- HERO -->
     <section id="hero">
-      <canvas id="particle-canvas"></canvas>
+      <canvas id="particle-canvas" style="--d:0"></canvas>
       <div class="wrap hero-inner">
-        <span class="eyebrow">UX Designer • Experience Engineer • AI in the Loop</span>
-        <h1>Design that listens,<br><em>then pushes back.</em></h1>
-        <p class="hero-sub">It listens before it argues, then resists the easy answer,
+        <span class="eyebrow hero-fade-up" style="--d:100">UX Designer • Experience Engineer • AI in the Loop</span>
+        <h1 aria-label="Design that listens, then pushes back."><span class="hero-heading-line"><span class="hero-heading-text" style="--d:120">Design that listens,</span></span> <span class="hero-heading-line"><span class="hero-heading-text" style="--d:220"><em>then pushes back.</em></span></span></h1>
+        <p class="hero-sub hero-fade-up" style="--d:500">It listens before it argues, then resists the easy answer,
           because the parts that push back are usually the parts that hold.</p>
-      <a href="/ask" class="ask-link">Prefer a conversation? Ask me instead &rarr;</a>
+      <a href="/ask" class="ask-link hero-fade-up" style="--d:600">Prefer a conversation? Ask me instead &rarr;</a>
+        <dl class="hero-meta" style="--d:700">
+          <div class="hero-fade-up" style="--d:780">
+            <dt>NAME</dt>
+            <dd>Ritwik</dd>
+          </div>
+          <div class="hero-fade-up" style="--d:860">
+            <dt>EXPERIENCE</dt>
+            <dd>3+ years</dd>
+          </div>
+          <div class="hero-fade-up" style="--d:940">
+            <dt>BASED IN</dt>
+            <dd>Bangalore, India</dd>
+          </div>
+        </dl>
       </div>
-      <a href="#work" class="hero-scroll" aria-label="Scroll to work">
+      <a href="#work" class="hero-scroll hero-fade-up" style="--d:1100" aria-label="Scroll to work">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 4v15M12 19l-6-6M12 19l6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -781,10 +919,37 @@
   </footer>
 
 <script>
+  const root = document.documentElement;
+  const clearHeroWillChange = (event) => {
+    if(!(event.target instanceof HTMLElement) || !event.animationName.startsWith('hero')) return;
+    event.target.style.willChange = '';
+    if(event.type === 'animationend' && event.animationName === 'heroFadeUp' && event.target.matches('.hero-scroll')){
+      event.target.classList.add('is-bouncing');
+    }
+  };
+  document.addEventListener('animationstart', (event) => {
+    if(!(event.target instanceof HTMLElement) || !event.animationName.startsWith('hero')) return;
+    event.target.style.willChange = event.animationName === 'heroFade' || event.animationName === 'heroCanvasFade'
+      ? 'opacity'
+      : event.animationName === 'heroRuleDraw' || event.animationName === 'heroMaskedRise'
+        ? 'transform'
+        : 'opacity, transform';
+  }, true);
+  document.addEventListener('animationend', clearHeroWillChange, true);
+  document.addEventListener('animationcancel', clearHeroWillChange, true);
+
+  let heroEntranceStarted = false;
+  const startHeroEntrance = () => {
+    if(heroEntranceStarted) return;
+    heroEntranceStarted = true;
+    window.clearTimeout(heroEntranceFallback);
+    root.classList.add('hero-in');
+  };
+  document.fonts.ready.then(startHeroEntrance);
+
   // THEME TOGGLE — defaults to dark, remembers choice, respects
   // system preference on first visit.
   // ---------------------------------------------------------
-  const root = document.documentElement;
   const themeToggle = document.getElementById('theme-toggle');
   const lightModeIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg>';
   const darkModeIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>';
@@ -950,13 +1115,13 @@
   // SCROLL-SPY — highlights the nav link for whichever section
   // is currently in view, instead of leaving "Home" stuck active.
   // ---------------------------------------------------------
-  const sectionIds = ['hero', 'work', 'about', 'contact'];
   const navLinkFor = {
     hero: document.querySelector('.nav-links a[href="#top"]'),
     work: document.querySelector('.nav-links a[href="#work"]'),
     about: document.querySelector('.nav-links a[href="#about"]'),
     contact: document.querySelector('.nav-links a[href="#contact"]')
   };
+  const sectionIds = ['hero', 'work', 'about', 'contact'];
   const observedSections = sectionIds
     .map(id => document.getElementById(id))
     .filter(Boolean);
