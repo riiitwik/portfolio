@@ -92,6 +92,8 @@ h1 em{font-style:italic;font-weight:400;color:var(--accent)}
 .msg{max-width:82%;padding:11px 15px;border-radius:14px;font-size:15px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
 .msg.user{align-self:flex-end;border:1px solid var(--accent-dim)}
 .msg.bot{align-self:flex-start;background:var(--raised)}
+.bot-line{display:block;animation:line-reveal 300ms var(--ease) both;animation-delay:var(--line-delay,0ms)}
+@keyframes line-reveal{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .bot-wrap{align-self:flex-start;max-width:92%;display:flex;flex-direction:column;gap:12px}
 .bot-wrap .msg{max-width:100%}
 .src{font:400 11px 'JetBrains Mono',monospace;color:var(--dim)}
@@ -142,7 +144,7 @@ html[data-theme="light"] .composer button{color:#FFFFFF}
 @media (max-height:700px){
   .chips{position:static;width:100%;max-width:820px}
 }
-@media (prefers-reduced-motion:reduce){.typing span{animation:none;opacity:.6}body{transition:none}.wip-tooltip{transition:none}}
+@media (prefers-reduced-motion:reduce){.typing span{animation:none;opacity:.6}.bot-line{animation:none;opacity:1;transform:none}body{transition:none}.wip-tooltip{transition:none}}
 </style>
 </head>
 <body>
@@ -275,11 +277,21 @@ function renderChips(){
 function loadConversations(){
   try{
     const saved=JSON.parse(localStorage.getItem(historyKey)||'[]');
-    return Array.isArray(saved)?saved.filter(c=>c&&typeof c.id==='string'&&typeof c.title==='string'&&Array.isArray(c.messages)).map(c=>({...c,messages:c.messages.filter(m=>m&&['user','assistant'].includes(m.role)&&typeof m.content==='string')})): [];
+    return Array.isArray(saved)?saved.filter(c=>c&&typeof c.id==='string'&&typeof c.title==='string'&&Array.isArray(c.messages)).map(c=>({...c,messages:normalizeSavedMessages(c.messages)})): [];
   }catch(e){
     console.warn('Could not load saved conversations.',e);
     return [];
   }
+}
+function normalizeSavedMessages(messages){
+  const valid=[];let expectedRole='user';
+  for(const message of messages){
+    if(!message||message.role!==expectedRole||typeof message.content!=='string'||!message.content.trim()||
+      (message.role==='assistant'&&!/[.!?]["')\]]*$/.test(message.content.trim())))break;
+    valid.push(message);expectedRole=expectedRole==='user'?'assistant':'user';
+  }
+  if(valid.at(-1)?.role==='user')valid.pop();
+  return valid;
 }
 function saveConversations(){
   try{localStorage.setItem(historyKey,JSON.stringify(conversations))}
@@ -370,7 +382,10 @@ renderHistory();
 function addUser(t){log.appendChild(el('div','msg user',t));scroll()}
 function scroll(){log.scrollTop=log.scrollHeight}
 function addBot(text,card){
-  const w=el('div','bot-wrap');w.appendChild(el('div','msg bot',text));
+  const w=el('div','bot-wrap');w.appendChild(el('div','msg bot',text));appendCaseCard(w,card);
+  log.appendChild(w);scroll();
+}
+function appendCaseCard(w,card){
   const c=CASES[card];
   if(c){
     const cd=el('div','card');
@@ -378,7 +393,58 @@ function addBot(text,card){
     const a=el('a',null,'Read the case study \u2192');a.href=c.href;tx.appendChild(a);
     cd.appendChild(tx);w.appendChild(cd);w.appendChild(el('div','src','Source: '+c.src));
   }
-  log.appendChild(w);scroll();
+}
+function addStreamingBot(){
+  const w=el('div','bot-wrap'),message=el('div','msg bot');
+  message.setAttribute('aria-live','polite');w.appendChild(message);log.appendChild(w);scroll();
+  return message;
+}
+function revealSentences(message,state,text,flush=false){
+  state.pending+=text;
+  while(true){
+    const boundary=/[.!?](?:["')\]]*)?(?=\s)/.exec(state.pending);
+    if(!boundary)break;
+    const end=boundary.index+boundary[0].length;
+    appendSentence(message,state,state.pending.slice(0,end));
+    state.pending=state.pending.slice(end).trimStart();
+  }
+  if(flush&&state.pending.trim()){appendSentence(message,state,state.pending);state.pending=''}
+}
+function appendSentence(message,state,text){
+  const sentence=text.trim();
+  if(!sentence)return;
+  const line=el('span','bot-line',sentence);
+  line.style.setProperty('--line-delay',`${state.count*100}ms`);
+  state.count++;message.appendChild(line);scroll();
+}
+async function readEventStream(response,onText){
+  if(!response.body)throw new Error('The assistant returned an unexpected response. Please try again.');
+  const reader=response.body.getReader(),decoder=new TextDecoder();
+  let buffer='',card=null,finished=false;
+  function processEvent(event){
+    const data=event.split('\n').filter(line=>line.startsWith('data:')).map(line=>line.slice(5).trim()).join('\n');
+    if(!data)return;
+    let payload;
+    try{payload=JSON.parse(data)}catch(e){throw new Error('The assistant returned an unexpected response. Please try again.')}
+    if(payload.type==='text'&&typeof payload.text==='string')onText(payload.text);
+    else if(payload.type==='done'){card=typeof payload.card==='string'&&Object.hasOwn(CASES,payload.card)?payload.card:null;finished=true}
+    else if(payload.type==='error')throw new Error(typeof payload.error==='string'?payload.error:'The assistant could not answer just now. Please try again.');
+  }
+  while(true){
+    let chunk;
+    try{chunk=await reader.read()}
+    catch(e){throw new Error('The connection ended before the assistant finished. Please try again.')}
+    const {value,done}=chunk;
+    if(done)break;
+    buffer+=decoder.decode(value,{stream:true});
+    buffer=buffer.replace(/\r\n/g,'\n');
+    let boundary;
+    while((boundary=buffer.indexOf('\n\n'))!==-1){processEvent(buffer.slice(0,boundary));buffer=buffer.slice(boundary+2)}
+  }
+  buffer+=decoder.decode();
+  if(buffer.trim())processEvent(buffer);
+  if(!finished)throw new Error('The assistant stream ended before completion. Please try again.');
+  return card;
 }
 function addError(text){
   const message=el('div','msg bot',text);
@@ -392,21 +458,34 @@ async function ask(text){
   busy=true;send.disabled=true;q.disabled=true;historyList.querySelectorAll('.delete-chat').forEach(button=>button.disabled=true);chips.hidden=true;q.value='';
   addUser(text);history.push({role:'user',content:text});persistActiveConversation();
   const ty=el('div','msg bot');ty.innerHTML='<span class="typing" aria-label="Thinking"><span></span><span></span><span></span></span>';log.appendChild(ty);scroll();
-  let reply=null,errorMessage=null;
+  let reply='',errorMessage=null,card=null,streamMessage=null;
+  const sentenceState={pending:'',count:0};
   try{
-    const response=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:history.slice(-10).map(({role,content})=>({role,content}))})});
-    let data;
-    try{data=await response.json()}catch(e){throw new Error('The assistant returned an unexpected response. Please try again.')}
-    if(!response.ok)throw new Error(typeof data.error==='string'?data.error:'The assistant could not answer just now. Please try again.');
-    if(typeof data.reply!=='string'||!data.reply.trim())throw new Error('The assistant returned an empty response. Please try again.');
-    reply=data.reply.trim();
-    const card=typeof data.card==='string'&&Object.hasOwn(CASES,data.card)?data.card:null;
-    history.push({role:'assistant',content:reply,card});persistActiveConversation();renderHistory();addBot(reply,card);
+    const requestHistory=history.slice(-10);
+    if(requestHistory[0]?.role==='assistant')requestHistory.shift();
+    const response=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:requestHistory.map(({role,content})=>({role,content}))})});
+    if(!response.ok){
+      let data;
+      try{data=await response.json()}catch(e){throw new Error('The assistant returned an unexpected response. Please try again.')}
+      throw new Error(typeof data.error==='string'?data.error:'The assistant could not answer just now. Please try again.');
+    }
+    card=await readEventStream(response,chunk=>{
+      if(!streamMessage){ty.remove();streamMessage=addStreamingBot()}
+      reply+=chunk;revealSentences(streamMessage,sentenceState,chunk);
+    });
+    revealSentences(streamMessage,sentenceState,'',true);
+    reply=reply.trim();
+    if(!reply)throw new Error('The assistant returned an empty response. Please try again.');
+    if(!/[.!?]["')\]]*$/.test(reply))throw new Error('The assistant response ended unexpectedly. Please try again.');
+    history.push({role:'assistant',content:reply,card});persistActiveConversation();renderHistory();
+    appendCaseCard(streamMessage.closest('.bot-wrap'),card);scroll();
   }catch(e){
     errorMessage=e instanceof Error&&e.message!=='Failed to fetch'?e.message:'Unable to reach the assistant. Please check your connection and try again.';
+    errorMessage=errorMessage.slice(0,240);
   }
   ty.remove();
   if(errorMessage){
+    streamMessage?.closest('.bot-wrap')?.remove();
     history.pop();persistActiveConversation();addError(errorMessage);
   }
   busy=false;send.disabled=false;q.disabled=false;renderHistory();q.focus();
