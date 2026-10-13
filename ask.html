@@ -262,14 +262,14 @@ wipChip.addEventListener('mouseleave',()=>{
 wipChip.addEventListener('blur',()=>wipChip.classList.remove('tooltip-dismissed'));
 const ENDPOINT='/api/ask';
 const QUESTION_POOL=[
-  'What was the hardest call on RBAC?',
-  'What did you cut, and why?',
-  'When did a stakeholder disagree with you?',
-  'Where did research change the design?',
-  'Why is routing native in Conditional Split?',
-  'What would you redo in Insights Copilot?',
-  'What did the design system fix?',
-  'How did RBAC change the product?',
+  "What's your strongest project?",
+  'What did you own end to end?',
+  'What problems do you work best on?',
+  'What was your role on RBAC?',
+  'How do you measure design success?',
+  'How did you reach 97% adoption?',
+  'How do you handle disagreement?',
+  "What's your design process?",
   'Are you open to new roles?'
 ];
 const CASES={
@@ -557,9 +557,8 @@ async function ask(text){
   let reply='',errorMessage=null,card=null,streamMessage=null;
   const sentenceState={pending:'',count:0};
   try{
-    const requestHistory=history.slice(-10);
-    if(requestHistory[0]?.role==='assistant')requestHistory.shift();
-    const response=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:requestHistory.map(({role,content})=>({role,content}))})});
+    const requestHistory=history.map(({role,content})=>({role,content}));
+    const response=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:requestHistory})});
     if(!response.ok){
       let data;
       try{data=await response.json()}catch(e){throw new Error('The assistant returned an unexpected response. Please try again.')}
